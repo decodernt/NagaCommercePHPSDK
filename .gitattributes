@@ -1,0 +1,9 @@
+# Files that live in the repo for contributors but shouldn't ship in the
+# Composer-distributed package. `export-ignore` makes `composer install`
+# skip them when pulling the package from a release archive. Standard
+# PHP-package convention — Symfony, Laravel, Guzzle, etc. all do this.
+/tests              export-ignore
+/phpunit.xml        export-ignore
+/.phpunit.cache     export-ignore
+/.gitattributes     export-ignore
+/.gitignore         export-ignore

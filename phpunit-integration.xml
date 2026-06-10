@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/12.5/phpunit.xsd"
+         bootstrap="tests/bootstrap.php"
+         colors="true"
+         cacheDirectory=".phpunit.cache"
+         backupGlobals="false"
+         backupStaticProperties="false"
+         stopOnFailure="false">
+    <testsuites>
+        <testsuite name="integration">
+            <directory>tests/Integration</directory>
+        </testsuite>
+    </testsuites>
+    <php>
+        <!--
+            Integration tests run against a live NagaCommerce store.
+            Required env vars (set in your shell or via a runner):
+              NC_API_URL    – e.g. https://www.nagacommerce.test/api
+              NC_API_KEY    – an API key on the target store with all scopes
+              NC_TEST_IMAGE – a stable, downloadable image URL the server can fetch
+                              (used for image-upload tests via MEDIAMANAGER)
+              NC_VERIFY_SSL – "0" to disable SSL peer/host verification (local .test domains)
+
+            Tests automatically skip when NC_API_URL or NC_API_KEY is missing,
+            so this config can sit alongside the unit-test config without
+            breaking CI / local dev runs.
+        -->
+    </php>
+</phpunit>

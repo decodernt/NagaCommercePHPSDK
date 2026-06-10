@@ -8,9 +8,20 @@
         "ext-curl": "*",
         "ext-json": "*"
     },
+    "require-dev": {
+        "phpunit/phpunit": "^12.0"
+    },
     "autoload": {
         "psr-4": {
             "NagaCommerce\\SDK\\": "src/"
         }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "NagaCommerce\\SDK\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "phpunit"
     }
 }
