@@ -111,4 +111,20 @@ final class NewsTest extends TestCase
         $this->assertSame('DELETE', $r['method']);
         $this->assertSame('/articles/article/500', $r['path']);
     }
+
+    #[Test]
+    public function create_category_posts_to_news_categories_create(): void
+    {
+        $payload = [
+            'newscattitle'       => 'Press Releases',
+            'newscatdescription' => 'Official announcements',
+            'newscatvisible'     => 1,
+        ];
+        $this->news->createCategory($payload);
+
+        $r = $this->http->lastRequest();
+        $this->assertSame('POST', $r['method']);
+        $this->assertSame('/news-categories/create', $r['path']);
+        $this->assertSame($payload, $r['body']);
+    }
 }

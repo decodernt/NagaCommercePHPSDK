@@ -10,8 +10,8 @@ use NagaCommerce\SDK\Http\Response;
  *
  * News in NagaCommerce is the storefront's content stream — articles are
  * grouped under categories. The server exposes article reads (list, get,
- * search) and category reads (list, get, search). Writes are admin-only,
- * not part of the API.
+ * search) + writes (create, update, delete), and category reads (list,
+ * get, search) + create.
  */
 class News
 {
@@ -68,6 +68,29 @@ class News
     public function searchCategories(array $params = []): Response
     {
         return $this->http->get('/news-categories/find', $params);
+    }
+
+    /**
+     * Create a news category. Scope: news.write
+     *
+     * Required: `newscattitle` (string, max 250 chars).
+     * Optional: `newscatdescription`, `newscatcurl` (slug — auto-derived
+     *   from title when omitted), `newscatvisible` (0/1), `newscatlanguage`,
+     *   `newscatlayout`, `newscatsidebarid`.
+     *
+     * Friendly aliases also accepted: `title` → `newscattitle`,
+     * `description` → `newscatdescription`.
+     *
+     * Defaults applied on create only:
+     *   - `newscatvisible: 0` (hidden until you publish)
+     *   - `newscatlanguage: el`, `newscatlayout: newscategory.html`
+     *
+     * The response carries the inserted category row. Use its
+     * `newscategoryid` as a `categories` entry when creating articles.
+     */
+    public function createCategory(array $data): Response
+    {
+        return $this->http->post('/news-categories/create', $data);
     }
 
     /**

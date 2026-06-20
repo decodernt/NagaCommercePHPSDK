@@ -312,6 +312,26 @@ $client->news()->deleteArticle($articleId);
 - `alt` text per image is stored in `news_gallery.newsimagedesc` (the storefront `<img alt="">` attribute).
 - Deletion cascades to `news_gallery`, `news_search`, `news_words`, `news_comments` in one transaction.
 
+Create a news category, then file an article under it:
+
+```php
+$cat = $client->news()->createCategory([
+    'newscattitle'       => 'Press Releases',
+    'newscatdescription' => 'Official company announcements',
+    'newscatvisible'     => 1,           // 0 (hidden) by default
+])->getData();
+
+$client->news()->createArticle([
+    'newstitle'  => 'We raised a Series A',
+    'categories' => [$cat['newscategoryid']],
+    'newsvisible'=> 1,
+]);
+```
+
+- Categories are created hidden by default (`newscatvisible: 0`).
+- `newscatcurl` (slug) defaults to a slugified title — set it explicitly for a stable URL.
+- `title` / `description` must be sent as the raw `newscattitle` / `newscatdescription` columns (no friendly aliases, matching the article create surface).
+
 ---
 
 ## 7. Pre-upload media for an artisan-block editor
