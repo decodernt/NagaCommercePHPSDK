@@ -332,6 +332,19 @@ $client->news()->createArticle([
 - `newscatcurl` (slug) defaults to a slugified title — set it explicitly for a stable URL.
 - `title` / `description` must be sent as the raw `newscattitle` / `newscatdescription` columns (no friendly aliases, matching the article create surface).
 
+Edit or remove a category later:
+
+```php
+// Partial update — only the fields you send change. Publish a hidden category:
+$client->news()->updateCategory($cat['newscategoryid'], ['newscatvisible' => 1]);
+
+// Delete it. Articles that referenced it keep their (now-orphaned) id in
+// newscategory — matches admin behavior (no FK; the link is a CSV column).
+$client->news()->deleteCategory($cat['newscategoryid']);
+```
+
+- `updateCategory()` needs `news.write`; `deleteCategory()` needs `news.delete`.
+
 ---
 
 ## 7. Pre-upload media for an artisan-block editor

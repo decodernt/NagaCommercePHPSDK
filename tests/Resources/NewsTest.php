@@ -127,4 +127,23 @@ final class NewsTest extends TestCase
         $this->assertSame('/news-categories/create', $r['path']);
         $this->assertSame($payload, $r['body']);
     }
+
+    #[Test]
+    public function update_category_PUTs_to_category_subpath(): void
+    {
+        $this->news->updateCategory(7, ['newscattitle' => 'Renamed']);
+        $r = $this->http->lastRequest();
+        $this->assertSame('PUT', $r['method']);
+        $this->assertSame('/news-categories/category/7', $r['path']);
+        $this->assertSame(['newscattitle' => 'Renamed'], $r['body']);
+    }
+
+    #[Test]
+    public function delete_category_DELETEs_category_subpath(): void
+    {
+        $this->news->deleteCategory(7);
+        $r = $this->http->lastRequest();
+        $this->assertSame('DELETE', $r['method']);
+        $this->assertSame('/news-categories/category/7', $r['path']);
+    }
 }

@@ -9,9 +9,9 @@ use NagaCommerce\SDK\Http\Response;
  * News resource — covers /api/articles and /api/news-categories. Scope: news.read.
  *
  * News in NagaCommerce is the storefront's content stream — articles are
- * grouped under categories. The server exposes article reads (list, get,
- * search) + writes (create, update, delete), and category reads (list,
- * get, search) + create.
+ * grouped under categories. The server exposes full CRUD on both: article
+ * reads (list, get, search) + writes (create, update, delete), and category
+ * reads (list, get, search) + writes (create, update, delete).
  */
 class News
 {
@@ -91,6 +91,32 @@ class News
     public function createCategory(array $data): Response
     {
         return $this->http->post('/news-categories/create', $data);
+    }
+
+    /**
+     * Update a news category. Scope: news.write
+     *
+     * Partial update — only the fields you send are written. Accepts the raw
+     * news_categories columns: `newscattitle`, `newscatdescription`,
+     * `newscatcurl`, `newscatvisible`, `newscatlayout`, `newscatsidebarid`,
+     * `newscatlanguage`. Returns the updated category row.
+     */
+    public function updateCategory(int $categoryId, array $data): Response
+    {
+        return $this->http->put('/news-categories/category/' . $categoryId, $data);
+    }
+
+    /**
+     * Delete a news category. Scope: news.delete
+     *
+     * Removes the news_categories row. Articles that referenced the category
+     * keep their (now-orphaned) id in `newscategory` — this matches the admin,
+     * which doesn't scrub references on category delete (there's no FK; the
+     * link is a CSV column on the article).
+     */
+    public function deleteCategory(int $categoryId): Response
+    {
+        return $this->http->delete('/news-categories/category/' . $categoryId);
     }
 
     /**
