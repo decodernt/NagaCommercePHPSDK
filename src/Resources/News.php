@@ -6,12 +6,14 @@ use NagaCommerce\SDK\Http\HttpClient;
 use NagaCommerce\SDK\Http\Response;
 
 /**
- * News resource — covers /api/articles and /api/news-categories. Scope: news.read.
+ * News resource — covers /api/articles, /api/news-categories and
+ * /api/news-comments. Scope: news.read / news.write / news.delete.
  *
  * News in NagaCommerce is the storefront's content stream — articles are
- * grouped under categories. The server exposes full CRUD on both: article
- * reads (list, get, search) + writes (create, update, delete), and category
- * reads (list, get, search) + writes (create, update, delete).
+ * grouped under categories and can carry visitor comments. The server
+ * exposes full CRUD on all three: articles (list, get, search, create,
+ * update, delete), categories (same), and comments (list, get, create,
+ * update, delete).
  */
 class News
 {
@@ -174,5 +176,68 @@ class News
     public function deleteArticle(int $articleId): Response
     {
         return $this->http->delete('/articles/article/' . $articleId);
+    }
+
+    // ====================================================================
+    // Comments — /api/news-comments
+    // ====================================================================
+
+    /**
+     * List news comments. Scope: news.read
+     *
+     * Optional query params:
+     *   - news_id (int) — restrict to one article
+     *   - status (int)  — 0 pending / 1 approved / 2 rejected
+     *   - start, limit (ints, limit capped at 500)
+     */
+    public function listComments(array $params = []): Response
+    {
+        return $this->http->get('/news-comments/', $params);
+    }
+
+    /**
+     * Get a single news comment by id. Scope: news.read
+     */
+    public function getComment(int $commentId): Response
+    {
+        return $this->http->get('/news-comments/' . $commentId);
+    }
+
+    /**
+     * Create a news comment. Scope: news.write
+     *
+     * Required: `news_id` (int), `text` (string).
+     * Optional: `from_name`, `user_id` (int), `parent_id` (int),
+     *   `status` (0 pending / 1 approved / 2 rejected; defaults to 0),
+     *   `date` (unix int or ISO 8601 string; defaults to now).
+     *
+     * The article's `newsnumcomments` is recomputed when the comment is
+     * created approved (status=1).
+     */
+    public function createComment(array $data): Response
+    {
+        return $this->http->post('/news-comments/', $data);
+    }
+
+    /**
+     * Update a news comment. Scope: news.write
+     *
+     * Partial — only the fields you send are written. Cannot move a comment
+     * to a different article. Changing `status` recomputes the article's
+     * approved-comment count.
+     */
+    public function updateComment(int $commentId, array $data): Response
+    {
+        return $this->http->put('/news-comments/' . $commentId, $data);
+    }
+
+    /**
+     * Delete a news comment. Scope: news.delete
+     *
+     * The parent article's `newsnumcomments` is recomputed in the same call.
+     */
+    public function deleteComment(int $commentId): Response
+    {
+        return $this->http->delete('/news-comments/' . $commentId);
     }
 }

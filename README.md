@@ -93,7 +93,7 @@ $client->brands();      // /api/brands
 $client->categories();  // /api/categories
 $client->customers();   // /api/customers
 $client->pricelists();  // /api/pricelists
-$client->news();        // /api/articles + /api/news-categories
+$client->news();        // /api/articles + /api/news-categories + /api/news-comments
 $client->export();      // /api/export/products
 $client->sync();        // /api/sync
 $client->media();       // /api/media — standalone media library
@@ -589,6 +589,32 @@ $client->news()->deleteArticle($articleId);
 Required / optional fields and image-key shape match the corresponding sections under [Products](#products) — same image-import behavior, same `images_result` envelope, same atomicity guarantee.
 
 Scopes: `news.write` for create/update, `news.delete` for delete.
+
+### News comments
+
+```php
+$client->news()->listComments(['news_id' => $articleId]);   // filter by article
+$client->news()->listComments(['status' => 0]);             // moderation queue (pending)
+$client->news()->getComment($commentId);
+
+// Create — `news_id` + `text` required. Defaults to pending (status 0).
+$client->news()->createComment([
+    'news_id'   => $articleId,
+    'text'      => 'Great article!',
+    'from_name' => 'Jane Doe',
+    // 'user_id' => 42, 'parent_id' => 0, 'status' => 1, 'date' => '2026-01-15T12:00:00Z'
+]);
+
+// Update — partial; can't move a comment to another article. Changing
+// `status` (0 pending / 1 approved / 2 rejected) recomputes the article's
+// approved-comment count.
+$client->news()->updateComment($commentId, ['status' => 1]);
+
+// Delete — recomputes the article's comment count in the same call.
+$client->news()->deleteComment($commentId);
+```
+
+Scopes: `news.read` for list/get, `news.write` for create/update, `news.delete` for delete.
 
 ---
 
